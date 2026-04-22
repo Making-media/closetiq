@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { useClosetStore } from "@/store/closet-store";
 import { useUserStore } from "@/store/user-store";
 import { GarmentType, Season } from "@/types";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { GarmentCard } from "@/components/garment/garment-card";
 import { ScanUpload } from "@/components/garment/scan-upload";
+import { SceneLoader } from "@/components/3d/scene-loader";
 
 const GARMENT_TYPES: GarmentType[] = [
   "shirt",
@@ -27,6 +29,7 @@ const FREE_TIER_MAX = 20;
 
 export default function ClosetPage() {
   const [scanOpen, setScanOpen] = React.useState(false);
+  const router = useRouter();
 
   const { garments, filters, loading, fetchGarments, setFilter, clearFilters, filteredGarments, viewMode, setViewMode } =
     useClosetStore();
@@ -140,23 +143,17 @@ export default function ClosetPage() {
           <p className="text-zinc-500 text-sm">Loading your closet...</p>
         </div>
       ) : viewMode === "3d" ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4">
-          {isFreeTier ? (
-            <>
-              <div className="text-5xl text-zinc-600">&#9671;</div>
-              <p className="text-white font-medium">3D view is a premium feature</p>
-              <p className="text-zinc-400 text-sm text-center max-w-sm">
-                Upgrade to ClosetIQ Lifetime to visualize your wardrobe in 3D and
-                try on outfits virtually.
-              </p>
-              <Button variant="primary" size="md">
-                Upgrade to Lifetime
-              </Button>
-            </>
-          ) : (
-            <p className="text-zinc-400 text-sm">3D view loading...</p>
-          )}
-        </div>
+        user?.purchase_tier === "free" ? (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-8 text-center">
+            <p className="text-zinc-400">3D Closet View</p>
+            <p className="text-sm text-zinc-600 mt-1">Upgrade to Lifetime to unlock 3D view</p>
+          </div>
+        ) : (
+          <SceneLoader
+            garments={displayed}
+            onGarmentClick={(garment) => router.push(`/closet/${garment.id}`)}
+          />
+        )
       ) : displayed.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           {garments.length === 0 ? (

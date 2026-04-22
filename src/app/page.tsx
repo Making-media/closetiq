@@ -89,7 +89,7 @@ export default function Home() {
             <p className="text-zinc-400 text-lg leading-relaxed">
               ClosetIQ analyzes the gaps in your wardrobe and surfaces items
               that unlock the most outfit combinations. Stop buying things that
-              don't go with anything — start building a closet that works.
+              don&apos;t go with anything — start building a closet that works.
             </p>
           </div>
         </section>

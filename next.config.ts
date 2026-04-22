@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     ],
   },
   transpilePackages: ["three"],
+  turbopack: {},
   webpack: (config) => {
     config.externals = [...(config.externals || []), { sharp: "commonjs sharp" }];
     return config;

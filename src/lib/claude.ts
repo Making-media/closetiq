@@ -18,6 +18,15 @@ function client(): Anthropic {
   return _client;
 }
 
+function parseJson<T>(text: string): T {
+  let cleaned = text.trim();
+  const fenceMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (fenceMatch) cleaned = fenceMatch[1].trim();
+  const firstBrace = cleaned.search(/[\{\[]/);
+  if (firstBrace > 0) cleaned = cleaned.slice(firstBrace);
+  return JSON.parse(cleaned) as T;
+}
+
 export interface ClassifyGarmentResult {
   type: GarmentType;
   subtype: GarmentSubtype;
@@ -89,7 +98,7 @@ Return a JSON object with these exact fields:
     throw new Error("Unexpected response type from Claude");
   }
 
-  return JSON.parse(content.text) as ClassifyGarmentResult;
+  return parseJson<ClassifyGarmentResult>(content.text);
 }
 
 export async function generateOutfitRating(
@@ -126,7 +135,7 @@ Respond with ONLY valid JSON, no other text. Return a JSON object with:
     throw new Error("Unexpected response type from Claude");
   }
 
-  return JSON.parse(content.text) as OutfitRatingResult;
+  return parseJson<OutfitRatingResult>(content.text);
 }
 
 export async function generateOutfitSuggestions(
@@ -165,7 +174,7 @@ Respond with ONLY valid JSON, no other text. Return a JSON array of ${count} out
     throw new Error("Unexpected response type from Claude");
   }
 
-  return JSON.parse(content.text) as OutfitSuggestion[];
+  return parseJson<OutfitSuggestion[]>(content.text);
 }
 
 export async function generateShoppingSuggestions(
@@ -202,5 +211,5 @@ Respond with ONLY valid JSON, no other text. Return a JSON array of shopping sug
     throw new Error("Unexpected response type from Claude");
   }
 
-  return JSON.parse(content.text) as ShoppingSuggestion[];
+  return parseJson<ShoppingSuggestion[]>(content.text);
 }

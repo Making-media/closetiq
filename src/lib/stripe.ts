@@ -1,8 +1,15 @@
 import Stripe from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-03-25.dahlia",
-});
+let _stripe: Stripe | null = null;
 
-export const LIFETIME_PRICE = 4999; // $49.99 in cents
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
+    _stripe = new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
+  }
+  return _stripe;
+}
+
+export const LIFETIME_PRICE = 4999;
 export const LIFETIME_PRODUCT_NAME = "ClosetIQ Lifetime Access";

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { stripe, LIFETIME_PRICE, LIFETIME_PRODUCT_NAME } from "@/lib/stripe";
+import { getStripe, LIFETIME_PRICE, LIFETIME_PRODUCT_NAME } from "@/lib/stripe";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
 
   const origin = req.headers.get("origin") ?? "http://localhost:3002";
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: [
       {

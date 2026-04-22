@@ -10,9 +10,13 @@ import {
   OccasionTag,
 } from "@/types";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+let _client: Anthropic | null = null;
+function client(): Anthropic {
+  if (!_client) {
+    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+  return _client;
+}
 
 export interface ClassifyGarmentResult {
   type: GarmentType;
@@ -47,7 +51,7 @@ export interface ShoppingSuggestion {
 }
 
 export async function classifyGarment(imageBase64: string): Promise<ClassifyGarmentResult> {
-  const message = await client.messages.create({
+  const message = await client().messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
     messages: [
@@ -96,7 +100,7 @@ export async function generateOutfitRating(
     .map((g) => `- ${g.name} (${g.type}/${g.subtype}, ${g.pattern}, formality: ${g.formality})`)
     .join("\n");
 
-  const message = await client.messages.create({
+  const message = await client().messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
     messages: [
@@ -137,7 +141,7 @@ export async function generateOutfitSuggestions(
     )
     .join("\n");
 
-  const message = await client.messages.create({
+  const message = await client().messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 2048,
     messages: [
@@ -172,7 +176,7 @@ export async function generateShoppingSuggestions(
     .map((g) => `- ${g.name} (${g.type}/${g.subtype})`)
     .join("\n");
 
-  const message = await client.messages.create({
+  const message = await client().messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 2048,
     messages: [

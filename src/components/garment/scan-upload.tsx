@@ -135,7 +135,6 @@ export function ScanUpload({ onComplete }: ScanUploadProps) {
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={handleInputChange}
       />

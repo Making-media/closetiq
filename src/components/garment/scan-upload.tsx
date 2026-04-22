@@ -42,11 +42,13 @@ export function ScanUpload({ onComplete }: ScanUploadProps) {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error ?? "Upload failed");
+        const message = body?.details ? `${body.error}: ${body.details}` : (body?.error ?? "Upload failed");
+        throw new Error(message);
       }
 
       setProgress("Processing result...");
-      const garment: Garment = await res.json();
+      const body = await res.json();
+      const garment: Garment = body.garment ?? body;
       addGarment(garment);
       onComplete?.(garment);
     } catch (err) {
@@ -133,6 +135,7 @@ export function ScanUpload({ onComplete }: ScanUploadProps) {
         ref={inputRef}
         type="file"
         accept="image/*"
+        capture="environment"
         className="hidden"
         onChange={handleInputChange}
       />
